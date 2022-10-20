@@ -1,0 +1,10 @@
+clAqua
+clBlue
+clFuchsia
+clGreen
+clLime
+clPurple
+clRed
+clSilver
+clWhite
+clYellow
