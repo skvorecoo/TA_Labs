@@ -1,0 +1,40 @@
+object Form3: TForm3
+  Left = 1066
+  Height = 126
+  Top = 575
+  Width = 376
+  Caption = 'Form3'
+  ClientHeight = 126
+  ClientWidth = 376
+  OnCreate = FormCreate
+  OnShow = FormShow
+  LCLVersion = '2.2.4.0'
+  object Label1: TLabel
+    Left = 8
+    Height = 21
+    Top = 32
+    Width = 46
+    Caption = 'Label1'
+    Font.CharSet = RUSSIAN_CHARSET
+    Font.Height = -16
+    Font.Pitch = fpVariable
+    Font.Quality = fqDraft
+    ParentColor = False
+    ParentFont = False
+  end
+  object Button1: TButton
+    Left = 152
+    Height = 25
+    Top = 88
+    Width = 75
+    Caption = 'OK'
+    OnClick = Button1Click
+    TabOrder = 0
+  end
+  object Timer1: TTimer
+    Interval = 1
+    OnTimer = Timer1Timer
+    Left = 8
+    Top = 88
+  end
+end

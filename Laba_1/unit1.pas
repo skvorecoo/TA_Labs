@@ -5,12 +5,10 @@ unit Unit1;
 interface
 
 uses
-  Classes, SysUtils, Forms, Controls, Graphics, Dialogs, StdCtrls, ExtCtrls,
-  Menus, EditBtn, ComCtrls, ActnList, ColorBox;
+  Classes, SysUtils, Forms, Controls, Graphics, Dialogs, ExtCtrls, StdCtrls,
+  Menus, ComCtrls, fpjson, jsonparser, FileUtil;
 
 type
-
-  { TForm1 }
 
   TCar=record
     x, y: integer;
@@ -23,69 +21,42 @@ type
     img: TPortableNetworkGraphic;
   end;
 
+  { TForm1 }
+
   TForm1 = class(TForm)
-    ComboBox1: TComboBox;
-    ComboBox10: TComboBox;
-    ComboBox11: TComboBox;
-    ComboBox12: TComboBox;
-    ComboBox13: TComboBox;
-    ComboBox14: TComboBox;
-    ComboBox15: TComboBox;
-    ComboBox16: TComboBox;
-    ComboBox17: TComboBox;
-    ComboBox18: TComboBox;
-    ComboBox19: TComboBox;
-    ComboBox2: TComboBox;
-    ComboBox20: TComboBox;
-    ComboBox3: TComboBox;
-    ComboBox4: TComboBox;
-    ComboBox5: TComboBox;
-    ComboBox6: TComboBox;
-    ComboBox7: TComboBox;
-    ComboBox8: TComboBox;
-    ComboBox9: TComboBox;
     Edit1: TEdit;
-    Image1: TImage;
-    Image10: TImage;
-    Image2: TImage;
-    Image3: TImage;
-    Image4: TImage;
-    Image5: TImage;
-    Image6: TImage;
-    Image7: TImage;
-    Image8: TImage;
-    Image9: TImage;
     Label1: TLabel;
-    Label10: TLabel;
-    Label11: TLabel;
-    Label12: TLabel;
-    Label13: TLabel;
-    Label14: TLabel;
-    Label15: TLabel;
-    Label2: TLabel;
-    Label3: TLabel;
-    Label4: TLabel;
-    Label5: TLabel;
-    Label6: TLabel;
-    Label7: TLabel;
-    Label8: TLabel;
-    Label9: TLabel;
-    DrawTimer: TTimer;
+    PlayPauseBtn: TButton;
+    MainMenu1: TMainMenu;
+    FileMenu: TMenuItem;
+    AboutAuthor: TMenuItem;
+    SaveDialog1: TSaveDialog;
+    SettingsMenu: TMenuItem;
+    About: TMenuItem;
+    FileOpen: TMenuItem;
+    FileSave: TMenuItem;
+    ExitApplication: TMenuItem;
+    SetColors: TMenuItem;
+    SetSpeed: TMenuItem;
+    AboutApplication: TMenuItem;
+    StartStopBtn: TButton;
+    ExitGameBtn: TButton;
+    DrawGameTimer: TTimer;
+    Panel1: TPanel;
     CalculateTimer: TTimer;
     TrackBar1: TTrackBar;
     procedure CalculateTimerTimer(Sender: TObject);
-    procedure Edit1EditingDone(Sender: TObject);
+    procedure DrawGameTimerTimer(Sender: TObject);
+    procedure Edit1Change(Sender: TObject);
+    procedure Edit1KeyPress(Sender: TObject; var Key: char);
+    procedure ExitApplicationClick(Sender: TObject);
+    procedure ExitGameBtnClick(Sender: TObject);
+    procedure FileSaveClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
-    procedure Image10MouseEnter(Sender: TObject);
-    procedure Image10MouseLeave(Sender: TObject);
-    procedure Image1Click(Sender: TObject);
-    procedure Image1MouseEnter(Sender: TObject);
-    procedure Image1MouseLeave(Sender: TObject);
-    procedure DrawTimerTimer(Sender: TObject);
-    procedure Image7Click(Sender: TObject);
-    procedure Image7MouseEnter(Sender: TObject);
-    procedure Image7MouseLeave(Sender: TObject);
-    procedure Image8Click(Sender: TObject);
+    procedure PlayPauseBtnClick(Sender: TObject);
+    procedure SetColorsClick(Sender: TObject);
+    procedure SetSpeedClick(Sender: TObject);
+    procedure StartStopBtnClick(Sender: TObject);
     procedure TrackBar1Change(Sender: TObject);
   private
 
@@ -95,163 +66,125 @@ type
 
 var
   Form1: TForm1;
-  Path: string;
-  Cars: array [0..4, 0..9] of TPortableNetworkGraphic;
-  PlayGameButton: TImage;
-  GrassColor: TColor;
-  PauseGameButton: TPortableNetworkGraphic;
   buf: TBitMap;
+  Colors: array [0..11] of TColor;
   Car: array [0..9] of TCar;
-  t, h, pos: integer;
-  Pause: boolean;
+  Cars: array [0..4, 0..11] of TPortableNetworkGraphic;
   CarsPositions: array [0..9] of TPos;
+  path: string;
+  Reserved: array [0..11] of boolean;
+  PlayPause, StartStop, ShowSpeed: boolean;
+  pos, tmp: integer;
 
 implementation
 
+uses unit2, Unit3;
+
 {$R *.lfm}
 
-{ TForm1 }
-
-procedure TForm1.FormCreate(Sender: TObject);
+procedure PrepareGameFilesAndVariables;
 
 var
   i, j: integer;
 
 begin
-  Pause:=True;
-  pos:=1;
-  PauseGameButton:=TPortableNetworkGraphic.Create;
+  ShowSpeed:=True; // Показать скрыть скорость
+  PlayPause:=True; //True - Play, False - Pause
+  StartStop:=False; //True - Start, False - Stop
+  path:=ExtractFileDir(Application.ExeName);
+
   randomize;
-  h:=1;
-  t:=0;
-  for i:=0 to 9 do
+
+  buf:=TBitMap.Create; buf.Width:=Form1.Width; buf.Height:=Form1.Width; //создание буфера. Нужно чтобы ничего не мигало
+
+  for i:=0 to 9 do //начальные координаты машин
   begin
     Car[i].y:=(i)*90+260;
     Car[i].x:=20;
   end;
-  buf:=TBitMap.Create; buf.Width:=Form1.Width; buf.Height:=Form1.Width; //создание буфера. Нужно чтобы ничего не мигало
-  path:=ExtractFileDir(Application.ExeName);
-  for i:=0 to 4 do
+
+  for i:=0 to 4 do //картинки с машинами рахных цветов
   begin
-    for j:=0 to 9 do
+    for j:=0 to 11 do
     begin
       Cars[i][j]:=TPortableNetworkGraphic.Create;
       Cars[i][j].LoadFromFile(path + '\cars\car' + IntToStr(i) + IntToStr(j+1) + '.png');
     end;
   end;
-  for i:=0 to 9 do
+
+  for i:=0 to 9 do //картинки с номерами мест
   begin
     CarsPositions[i].img:=TPortableNetworkGraphic.Create;
   end;
-  PauseGameButton.LoadFromFile(path + '\Buttons\PauseGame.png');
-end;
 
-procedure TForm1.Image10MouseEnter(Sender: TObject);
-begin
-  Form1.Image10.Picture.LoadFromFile(path + '\Buttons\RestartPressed.png');
-end;
-
-procedure TForm1.Image10MouseLeave(Sender: TObject);
-begin
-  Form1.Image10.Picture.LoadFromFile(path + '\Buttons\Restart.png');
-end;
-
-procedure TForm1.CalculateTimerTimer(Sender: TObject);
-
-var
-  a: integer;
-
-begin
-  a:=random(10);
-  if not(Car[a].finished) then Car[a].x+=20;
-  if (Car[a].x > Form1.Width-200) and not(Car[a].finished) then
+  for i:=1 to 10 do
   begin
-    Car[a].finished:=true;
-    CarsPositions[a].img.LoadFromFile(path + '\Positions\' + IntToStr(pos) + '.png');
-    CarsPositions[a].pos:=pos;
-    pos+=1;
+    Reserved[i]:=true;
   end;
+
+  for i:=0 to 9 do //начальные координаты машин
+  begin
+    Car[i].y:=(i)*90+260;
+    Car[i].x:=20;
+  end;
+
+  for i:=0 to 4 do //картинки с машинами рахных цветов
+  begin
+    for j:=0 to 11 do
+    begin
+      Cars[i][j]:=TPortableNetworkGraphic.Create;
+      Cars[i][j].LoadFromFile(path + '\cars\car' + IntToStr(i) + IntToStr(j+1) + '.png');
+    end;
+  end;
+
+  for i:=0 to 9 do //картинки с номерами мест
+  begin
+    CarsPositions[i].img:=TPortableNetworkGraphic.Create;
+  end;
+
+  Colors[0]:=clAqua;
+  Colors[1]:=clBlue;
+  Colors[2]:=clFuchsia;
+  Colors[3]:=clGreen;
+  Colors[4]:=clLime;
+  Colors[5]:=clPurple;
+  Colors[6]:=clRed;
+  Colors[7]:=clSilver;
+  Colors[8]:=clWhite;
+  Colors[9]:=clYellow;
+  Colors[10]:=clSkyBlue;
+  Colors[11]:=clMoneyGreen;
+
+  Car[0].texture:=Cars[0][1];
+  Car[1].texture:=Cars[1][2];
+  Car[2].texture:=Cars[2][3];
+  Car[3].texture:=Cars[3][4];
+  Car[4].texture:=Cars[4][5];
+  Car[5].texture:=Cars[0][6];
+  Car[6].texture:=Cars[1][7];
+  Car[7].texture:=Cars[2][8];
+  Car[8].texture:=Cars[3][9];
+  Car[9].texture:=Cars[4][10];
 end;
 
-procedure TForm1.Edit1EditingDone(Sender: TObject);
-begin
-  if Form1.Edit1.Text='' then Form1.Edit1.Text:='1';
-  Form1.TrackBar1.Position:=StrToInt(Form1.Edit1.Text);
-  Form1.CalculateTimer.Interval:=(Form1.TrackBar1.Position);
-end;
-
-procedure TForm1.Image1Click(Sender: TObject);
+procedure DrawGame;
 
 var
-  i: integer;
+  i, j, strips: integer;
 
 begin
-  Form1.Image7.Visible:=False;
-  Form1.Image8.Visible:=True;
-  Form1.Image1.Visible:=False;
-  Form1.Image1.Enabled:=False;
-  Form1.DrawTimer.Enabled:=True;
-  Form1.Label1.Visible:=False; Form1.ComboBox1.Visible:=False; // ужас полный отсюда
-  Form1.Label2.Visible:=False; Form1.ComboBox2.Visible:=False;
-  Form1.Label3.Visible:=False; Form1.ComboBox3.Visible:=False;
-  Form1.Label4.Visible:=False; Form1.ComboBox4.Visible:=False;
-  Form1.Label5.Visible:=False; Form1.ComboBox5.Visible:=False;
-  Form1.Label6.Visible:=False; Form1.ComboBox6.Visible:=False;
-  Form1.Label7.Visible:=False; Form1.ComboBox7.Visible:=False;
-  Form1.Label8.Visible:=False; Form1.ComboBox8.Visible:=False;
-  Form1.Label9.Visible:=False; Form1.ComboBox9.Visible:=False;
-  Form1.ComboBox10.Visible:=False;
-  Form1.ComboBox11.Visible:=False;
-  Form1.ComboBox12.Visible:=False;
-  Form1.ComboBox13.Visible:=False;
-  Form1.ComboBox14.Visible:=False;
-  Form1.ComboBox15.Visible:=False;
-  Form1.ComboBox16.Visible:=False;
-  Form1.ComboBox17.Visible:=False;
-  Form1.ComboBox18.Visible:=False;
-  Form1.ComboBox19.Visible:=False;
-  Form1.ComboBox20.Visible:=False;
-  Form1.Image10.Visible:=True;
-  Car[0].texture:=Cars[Form1.ComboBox11.ItemIndex][Form1.ComboBox1.ItemIndex];
-  Car[1].texture:=Cars[Form1.ComboBox12.ItemIndex][Form1.ComboBox2.ItemIndex];
-  Car[2].texture:=Cars[Form1.ComboBox13.ItemIndex][Form1.ComboBox3.ItemIndex];
-  Car[3].texture:=Cars[Form1.ComboBox14.ItemIndex][Form1.ComboBox4.ItemIndex];
-  Car[4].texture:=Cars[Form1.ComboBox15.ItemIndex][Form1.ComboBox5.ItemIndex];
-  Car[5].texture:=Cars[Form1.ComboBox16.ItemIndex][Form1.ComboBox6.ItemIndex];
-  Car[6].texture:=Cars[Form1.ComboBox17.ItemIndex][Form1.ComboBox7.ItemIndex];
-  Car[7].texture:=Cars[Form1.ComboBox18.ItemIndex][Form1.ComboBox8.ItemIndex];
-  Car[8].texture:=Cars[Form1.ComboBox19.ItemIndex][Form1.ComboBox9.ItemIndex];
-  Car[9].texture:=Cars[Form1.ComboBox20.ItemIndex][Form1.ComboBox10.ItemIndex]; //ужас полный досюда
-  GrassColor:=clGreen; //цвет травы
-  Form1.CalculateTimer.Enabled:=True;
-  //DrawScene(GrassColor); //вызов процедуры отрисовки всякой всячины типа дороги, травы и так далее
-end;
-
-procedure TForm1.Image1MouseEnter(Sender: TObject);
-begin
-  Form1.Image1.Picture.LoadFromFile(path + '\Buttons\PlayGamePress.png');
-end;
-
-procedure TForm1.Image1MouseLeave(Sender: TObject);
-begin
-  Form1.Image1.Picture.LoadFromFile(path + '\Buttons\PlayGame.png');
-end;
-
-procedure TForm1.DrawTimerTimer(Sender: TObject);
-
-var
-  i, j, strips, High, Different: integer;
-
-begin
-  buf.Canvas.Brush.Color:=GrassColor;
+  buf.Canvas.Brush.Color:=Colors[Form2.ComboBox21.ItemIndex];
   strips:=((2*90+10)-(1*90+10)) div 2;
   buf.Canvas.Rectangle(0, 0, Form1.Width, Form1.Height); //травка
   buf.Canvas.Brush.Color:=$00555555;
+
   for i:=1 to 10 do
   begin
     buf.Canvas.Rectangle(0, ((i-1)*90)+260, buf.Width, (i*90)+240); //дороги
   end;
+
   buf.Canvas.Brush.Color:=clWhite;
+
   for i:=1 to 10 do
   begin
     j:=0;
@@ -260,8 +193,10 @@ begin
       j+=1;
     until buf.Width < (j+2)*20+20;
   end;
-  buf.Canvas.Brush.Color:=clRed;
+
+  buf.Canvas.Brush.Color:=clRed; //Линиия старта
   buf.Canvas.Rectangle(172, 260, 177, Form1.Height-60);
+
   j:=1;
   repeat
     i:=1;
@@ -275,58 +210,360 @@ begin
     until Form1.Width-165 < Form1.Width-195+(i*5);
     j+=1;
   until Form1.Height-60 < 260+(j*10);
+
   for i:=0 to 9 do
   begin
     buf.Canvas.Draw(Car[i].x, Car[i].y, Car[i].texture);
   end;
-  buf.Canvas.Draw(400, 56, PauseGameButton);
-  buf.Canvas.Draw(168, 48, Form1.Image10.Picture.Graphic);
-  for i:=0 to 9 do
-  begin
-    if CarsPositions[i].pos <> 0 then
-    begin
-      buf.Canvas.Draw(50, Car[i].y, CarsPositions[i].img);
-    end;
-  end;
+
   Form1.Canvas.Draw(0, 0, buf);
 end;
 
-procedure TForm1.Image7Click(Sender: TObject);
+procedure RaceComplete;
+
 begin
-  Close;
+  Form1.CalculateTimer.Enabled:=False;
+  ShowMessage('Игра завершена!');
 end;
 
-procedure TForm1.Image7MouseEnter(Sender: TObject);
-begin
-  Form1.Image7.Picture.LoadFromFile(path + '\Buttons\ExitGamePress.png');
-end;
-
-procedure TForm1.Image7MouseLeave(Sender: TObject);
-begin
-  Form1.Image7.Picture.LoadFromFile(path + '\Buttons\ExitGame.png');
-end;
-
-procedure TForm1.Image8Click(Sender: TObject);
+procedure ChooseAnotherCar(a, tmp: integer);
 
 begin
-  if Pause then
+  if pos = 11 then RaceComplete
+  else
+    if a > 11 then a:=0
+  else
+  if not(Car[a].finished) and (Car[a].x > Form1.Width-200) then
   begin
+    Car[a].finished:=true;
+    CarsPositions[a].img.LoadFromFile(path + '\Positions\' + IntToStr(pos) + '.png');
+    CarsPositions[a].pos:=pos;
+    pos+=1;
+  end
+  else if not((Car[a].finished) and (Car[a].x > Form1.Width-200)) then
+    Car[a].x+=40
+  else if pos = 11 then RaceComplete
+  else
+    ChooseAnotherCar(a+1, tmp);
+end;
+
+procedure DriveCar;
+
+var
+  a, tmp: integer;
+
+begin
+  a:=random(10);
+  tmp:=a;
+  if not(Car[a].finished) and (Car[a].x > Form1.Width-200) then
+  begin
+    Car[a].finished:=true;
+    CarsPositions[a].img.LoadFromFile(path + '\Positions\' + IntToStr(pos) + '.png');
+    CarsPositions[a].pos:=pos;
+    pos+=1;
+  end
+  else if not((Car[a].finished) and (Car[a].x > Form1.Width-200)) then
+    Car[a].x+=40
+  else if pos = 11 then RaceComplete
+  else
+    ChooseAnotherCar(a, tmp);
+end;
+
+procedure PlayPauseGame;
+
+begin
+  if PlayPause then
+  begin
+    Form1.PlayPauseBtn.Caption:='Продолжить';
     Form1.CalculateTimer.Enabled:=False;
-    Pause:=False;
-    PauseGameButton.LoadFromFile(path + '\Buttons\PauseGamePressed.png');
+    Form1.SetColors.Enabled:=True;
   end
   else
   begin
-    Form1.CalculateTimer.Enabled:=True;
-    Pause:=True;
-    PauseGameButton.LoadFromFile(path + '\Buttons\PauseGame.png');
+    Form1.PlayPauseBtn.Caption:='Пауза';
+      if StartStop then Form1.CalculateTimer.Enabled:=True;
+    Form1.SetColors.Enabled:=False;
   end;
+  PlayPause:=not(PlayPause);
+end;
+
+procedure StartStopGame;
+
+var
+  i: integer;
+
+begin
+  if StartStop then
+  begin
+    Form1.StartStopBtn.Caption:='Старт';
+    Form1.CalculateTimer.Enabled:=False;
+    pos:=1;
+
+    for i:=0 to 9 do //начальные координаты машин
+    begin
+      Car[i].x:=20;
+    end;
+
+    Form1.SetColors.Enabled:=False;
+    Form1.PlayPauseBtn.Caption:='Пауза';
+    PlayPause:=True;
+    Form1.SetColors.Enabled:=True;
+  end
+  else
+  begin
+    Form1.StartStopBtn.Caption:='Стоп';
+    Form1.CalculateTimer.Enabled:=True;
+    pos:=1;
+    Form1.PlayPauseBtn.Caption:='Пауза';
+    Form1.SetColors.Enabled:=True;
+    PlayPause:=True;
+    Form1.SetColors.Enabled:=False;
+    Form2.Close;
+    Form3.Close;
+  end;
+  StartStop:=not(StartStop);
+end;
+
+procedure ShowSettings;
+
+begin
+  Form2.Show;
+end;
+
+procedure ExitApp;
+
+begin
+  Form1.Close;
+end;
+
+procedure EditSpeed(var Key: char);
+
+begin
+  if (not (key in ['1'..'9', #8])) then
+  begin
+    key:=#0;
+    Form3.Show;
+    Form3.Label1.Caption:='В поле можно вводить только цифры.';
+  end;
+end;
+
+procedure ShowHideSpeed;
+
+begin
+  if ShowSpeed then
+  begin
+    Form1.TrackBar1.Visible:=True;
+    Form1.Edit1.Visible:=True;
+    Form1.Label1.Visible:=True;
+  end
+  else
+  begin
+    Form1.TrackBar1.Visible:=False;
+    Form1.Edit1.Visible:=False;
+    Form1.Label1.Visible:=False;
+  end;
+  ShowSpeed:=not(ShowSpeed);
+end;
+
+procedure SaveGame;
+
+var
+  JSaveGame, JCars, JCar, JGrass, JGameState: TJSONObject;
+  strList: TStringList;
+
+begin
+  strList:=TStringList.Create;
+  JSaveGame:=TJSONObject.Create;
+  JCars:=TJSONObject.create;
+
+  JCar:=TJSONObject.Create;
+  JCar.Add('Color', Form2.ComboBox1.ItemIndex);
+  JCar.Add('Type', Form2.ComboBox11.ItemIndex);
+  JCar.Add('X', Car[0].x);
+  Jcar.Add('Y', Car[0].y);
+  JCar.Add('Finished', Car[0].finished);
+  JCars.Add('Car[0]', JCar);
+
+  JCar:=TJSONObject.Create;
+  JCar.Add('Color', Form2.ComboBox2.ItemIndex);
+  JCar.Add('Type', Form2.ComboBox12.ItemIndex);
+  JCar.Add('X', Car[1].x);
+  Jcar.Add('Y', Car[1].y);
+  JCar.Add('Finished', Car[1].finished);
+  JCars.Add('Car[1]', JCar);
+
+  JCar:=TJSONObject.Create;
+  JCar.Add('Color', Form2.ComboBox3.ItemIndex);
+  JCar.Add('Type', Form2.ComboBox13.ItemIndex);
+  JCar.Add('X', Car[2].x);
+  Jcar.Add('Y', Car[2].y);
+  JCar.Add('Finished', Car[2].finished);
+  JCars.Add('Car[2]', JCar);
+
+  JCar:=TJSONObject.Create;
+  JCar.Add('Color', Form2.ComboBox4.ItemIndex);
+  JCar.Add('Type', Form2.ComboBox14.ItemIndex);
+  JCar.Add('X', Car[3].x);
+  Jcar.Add('Y', Car[3].y);
+  JCar.Add('Finished', Car[3].finished);
+  JCars.Add('Car[3]', JCar);
+
+  JCar:=TJSONObject.Create;
+  JCar.Add('Color', Form2.ComboBox5.ItemIndex);
+  JCar.Add('Type', Form2.ComboBox15.ItemIndex);
+  JCar.Add('X', Car[4].x);
+  Jcar.Add('Y', Car[4].y);
+  JCar.Add('Finished', Car[4].finished);
+  JCars.Add('Car[4]', JCar);
+  JSaveGame.Add('Cars', JCars);
+
+  JCar:=TJSONObject.Create;
+  JCar.Add('Color', Form2.ComboBox6.ItemIndex);
+  JCar.Add('Type', Form2.ComboBox16.ItemIndex);
+  JCar.Add('X', Car[5].x);
+  Jcar.Add('Y', Car[5].y);
+  JCar.Add('Finished', Car[5].finished);
+  JCars.Add('Car[5]', JCar);
+
+  JCar:=TJSONObject.Create;
+  JCar.Add('Color', Form2.ComboBox7.ItemIndex);
+  JCar.Add('Type', Form2.ComboBox17.ItemIndex);
+  JCar.Add('X', Car[6].x);
+  Jcar.Add('Y', Car[6].y);
+  JCar.Add('Finished', Car[6].finished);
+  JCars.Add('Car[6]', JCar);
+
+  JCar:=TJSONObject.Create;
+  JCar.Add('Color', Form2.ComboBox8.ItemIndex);
+  JCar.Add('Type', Form2.ComboBox18.ItemIndex);
+  JCar.Add('X', Car[7].x);
+  Jcar.Add('Y', Car[7].y);
+  JCar.Add('Finished', Car[7].finished);
+  JCars.Add('Car[7]', JCar);
+
+  JCar:=TJSONObject.Create;
+  JCar.Add('Color', Form2.ComboBox9.ItemIndex);
+  JCar.Add('Type', Form2.ComboBox19.ItemIndex);
+  JCar.Add('X', Car[8].x);
+  Jcar.Add('Y', Car[8].y);
+  JCar.Add('Finished', Car[8].finished);
+  JCars.Add('Car[8]', JCar);
+
+  JCar:=TJSONObject.Create;
+  JCar.Add('Color', Form2.ComboBox10.ItemIndex);
+  JCar.Add('Type', Form2.ComboBox20.ItemIndex);
+  JCar.Add('X', Car[9].x);
+  Jcar.Add('Y', Car[9].y);
+  JCar.Add('Finished', Car[9].finished);
+  JCars.Add('Car[9]', JCar);
+
+  JGrass:=TJSONObject.Create;
+  JGrass.Add('Color', Form2.ComboBox21.ItemIndex);
+  JSaveGame.Add('Grass', JGrass);
+
+  JGameState:=TJSONObject.Create;
+  JGameState.Add('PlayPauseCaption', Form1.PlayPauseBtn.Caption);
+  JGameState.Add('PlayPauseState', PlayPause);
+  JGameState.Add('StartStopCaption', Form1.StartStopBtn.Caption);
+  JGameState.Add('StartStopState', StartStop);
+  JGameState.Add('NumbersOfArrivedCars', pos);
+  JGameState.Add('CarPosition[0]', CarsPositions[0].pos);
+  JGameState.Add('CarPosition[1]', CarsPositions[1].pos);
+  JGameState.Add('CarPosition[2]', CarsPositions[2].pos);
+  JGameState.Add('CarPosition[3]', CarsPositions[3].pos);
+  JGameState.Add('CarPosition[4]', CarsPositions[4].pos);
+  JGameState.Add('CarPosition[5]', CarsPositions[5].pos);
+  JGameState.Add('CarPosition[6]', CarsPositions[6].pos);
+  JGameState.Add('CarPosition[7]', CarsPositions[7].pos);
+  JGameState.Add('CarPosition[8]', CarsPositions[8].pos);
+  JGameState.Add('CarPosition[9]', CarsPositions[9].pos);
+  JGameState.Add('Speed', Form1.TrackBar1.Position);
+  JSaveGame.Add('GameState', JGameState);
+
+  strList.Text:=JSaveGame.FormatJSON();
+  if Form1.SaveDialog1.Execute then
+  strList.SaveToFile(Form1.SaveDialog1.FileName);
+end;
+
+{ TForm1 }
+
+procedure TForm1.FormCreate(Sender: TObject);
+begin
+  PrepareGameFilesAndVariables;
+end;
+
+procedure TForm1.PlayPauseBtnClick(Sender: TObject);
+begin
+  PlayPauseGame;
+end;
+
+procedure TForm1.SetColorsClick(Sender: TObject);
+begin
+  ShowSettings;
+end;
+
+procedure TForm1.SetSpeedClick(Sender: TObject);
+begin
+  ShowHideSpeed;
+end;
+
+procedure TForm1.StartStopBtnClick(Sender: TObject);
+begin
+  StartStopGame;
 end;
 
 procedure TForm1.TrackBar1Change(Sender: TObject);
 begin
-  Form1.Edit1.Caption:=IntToStr(Form1.TrackBar1.Position);
-  Form1.CalculateTimer.Interval:=(Form1.TrackBar1.Position);
+  Form1.Edit1.Text:=IntToStr(Form1.TrackBar1.Position);
+  if Form1.TrackBar1.Position=0 then Form1.CalculateTimer.Interval:=0 else
+  Form1.CalculateTimer.Interval:=100 - Form1.TrackBar1.Position;
+end;
+
+procedure TForm1.DrawGameTimerTimer(Sender: TObject);
+begin
+  DrawGame;
+end;
+
+procedure TForm1.Edit1Change(Sender: TObject);
+begin
+  if (Form1.Edit1.Text='') then
+  begin
+    Form1.Edit1.Text:='0';
+  end;
+  if StrToInt(Form1.Edit1.Text) > 99 then
+  begin
+    Form1.Edit1.Text:='99';
+    Form3.Show;
+    Form3.Label1.Caption:='Число должно быть от 0 до 99.';
+  end;
+  Form1.TrackBar1.Position:=StrToInt(Form1.Edit1.Text);
+  Form1.CalculateTimer.Interval:=100 - Form1.TrackBar1.Position;
+end;
+
+procedure TForm1.Edit1KeyPress(Sender: TObject; var Key: char);
+begin
+  EditSpeed(Key);
+end;
+
+procedure TForm1.CalculateTimerTimer(Sender: TObject);
+begin
+  DriveCar;
+end;
+
+procedure TForm1.ExitApplicationClick(Sender: TObject);
+begin
+  ExitApp;
+end;
+
+procedure TForm1.ExitGameBtnClick(Sender: TObject);
+begin
+  ExitApp;
+end;
+
+procedure TForm1.FileSaveClick(Sender: TObject);
+begin
+  SaveGame;
 end;
 
 end.
+
