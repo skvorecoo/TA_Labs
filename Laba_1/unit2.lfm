@@ -3,10 +3,11 @@ object Form2: TForm2
   Height = 733
   Top = 297
   Width = 1205
-  Caption = 'Form2'
+  Caption = 'Настройка цвета'
   ClientHeight = 733
   ClientWidth = 1205
   OnShow = FormShow
+  Position = poDesktopCenter
   LCLVersion = '2.2.4.0'
   object Image1: TImage
     Left = 8
@@ -1626,12 +1627,11 @@ object Form2: TForm2
     Text = 'Зелёный'
   end
   object Button1: TButton
-    Left = 8
+    Left = 381
     Height = 75
-    Top = 264
-    Width = 206
-    AutoSize = True
-    Caption = 'Закрыть'
+    Top = 520
+    Width = 200
+    Caption = 'ОК'
     Font.CharSet = RUSSIAN_CHARSET
     Font.Height = -48
     Font.Pitch = fpVariable
@@ -1641,12 +1641,11 @@ object Form2: TForm2
     TabOrder = 26
   end
   object Button2: TButton
-    Left = 8
+    Left = 592
     Height = 75
-    Top = 424
-    Width = 631
-    AutoSize = True
-    Caption = 'Вернуть прежние значения'
+    Top = 520
+    Width = 200
+    Caption = 'Отмена'
     Font.CharSet = RUSSIAN_CHARSET
     Font.Height = -48
     Font.Pitch = fpVariable
@@ -1656,11 +1655,10 @@ object Form2: TForm2
     TabOrder = 27
   end
   object Button3: TButton
-    Left = 8
+    Left = 384
     Height = 75
-    Top = 344
+    Top = 424
     Width = 406
-    AutoSize = True
     Caption = 'Случайные цвета'
     Font.CharSet = RUSSIAN_CHARSET
     Font.Height = -48

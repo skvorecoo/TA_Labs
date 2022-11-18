@@ -3,11 +3,12 @@ object Form3: TForm3
   Height = 126
   Top = 575
   Width = 376
-  Caption = 'Form3'
+  Caption = 'Ошибка!'
   ClientHeight = 126
   ClientWidth = 376
   OnCreate = FormCreate
   OnShow = FormShow
+  Position = poDesktopCenter
   LCLVersion = '2.2.4.0'
   object Label1: TLabel
     Left = 8

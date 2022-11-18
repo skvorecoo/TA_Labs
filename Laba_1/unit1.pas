@@ -46,10 +46,10 @@ type
     Panel1: TPanel;
     CalculateTimer: TTimer;
     TrackBar1: TTrackBar;
+    procedure AboutApplicationClick(Sender: TObject);
+    procedure AboutAuthorClick(Sender: TObject);
     procedure CalculateTimerTimer(Sender: TObject);
     procedure DrawGameTimerTimer(Sender: TObject);
-    procedure Edit1Change(Sender: TObject);
-    procedure Edit1KeyPress(Sender: TObject; var Key: char);
     procedure ExitApplicationClick(Sender: TObject);
     procedure ExitGameBtnClick(Sender: TObject);
     procedure FileOpenClick(Sender: TObject);
@@ -59,7 +59,6 @@ type
     procedure SetColorsClick(Sender: TObject);
     procedure SetSpeedClick(Sender: TObject);
     procedure StartStopBtnClick(Sender: TObject);
-    procedure TrackBar1Change(Sender: TObject);
   private
 
   public
@@ -80,7 +79,7 @@ var
 
 implementation
 
-uses unit2, Unit3;
+uses Unit2, Unit3, Unit4;
 
 {$R *.lfm}
 
@@ -222,7 +221,7 @@ begin
     buf.Canvas.Draw(Car[i].x, Car[i].y, Car[i].texture);
   end;
 
-  for i:=0 to 9 do if CarsPositions[i].pos <> 0 then buf.Canvas.Draw(1700, Car[i].y, CarsPositions[i].img);
+  for i:=0 to 9 do if CarsPositions[i].pos <> 0 then buf.Canvas.Draw(1930, Car[i].y+10, CarsPositions[i].img);
 
   Form1.Canvas.Draw(0, 0, buf);
 end;
@@ -284,13 +283,11 @@ begin
   begin
     Form1.PlayPauseBtn.Caption:='Продолжить';
     Form1.CalculateTimer.Enabled:=False;
-    Form1.SetColors.Enabled:=True;
   end
   else
   begin
     Form1.PlayPauseBtn.Caption:='Пауза';
       if StartStop then Form1.CalculateTimer.Enabled:=True;
-    Form1.SetColors.Enabled:=False;
   end;
   PlayPause:=not(PlayPause);
 end;
@@ -318,8 +315,6 @@ begin
       Car[i].finished:=false;
     end;
 
-
-    Form1.SetColors.Enabled:=False;
     Form1.PlayPauseBtn.Caption:='Пауза';
     PlayPause:=True;
     Form1.SetColors.Enabled:=True;
@@ -327,11 +322,9 @@ begin
   else
   begin
     Form1.StartStopBtn.Caption:='Стоп';
-    Form1.CalculateTimer.Enabled:=True;
+    if (PlayPause) then Form1.CalculateTimer.Enabled:=True;
     pos:=1;
-    Form1.PlayPauseBtn.Caption:='Пауза';
-    Form1.SetColors.Enabled:=True;
-    PlayPause:=True;
+    //PlayPause:=True;
     Form1.SetColors.Enabled:=False;
     Form2.Close;
     Form3.Close;
@@ -366,33 +359,10 @@ begin
   Form1.Close;
 end;
 
-procedure EditSpeed(var Key: char);
-
-begin
-  if (not (key in ['1'..'9', #8])) then
-  begin
-    key:=#0;
-    Form3.Show;
-    Form3.Label1.Caption:='В поле можно вводить только цифры.';
-  end;
-end;
-
 procedure ShowHideSpeed;
 
 begin
-  if ShowSpeed then
-  begin
-    Form1.TrackBar1.Visible:=True;
-    Form1.Edit1.Visible:=True;
-    Form1.Label1.Visible:=True;
-  end
-  else
-  begin
-    Form1.TrackBar1.Visible:=False;
-    Form1.Edit1.Visible:=False;
-    Form1.Label1.Visible:=False;
-  end;
-  ShowSpeed:=not(ShowSpeed);
+  Form4.Show;
 end;
 
 procedure OpenSavedGame;
@@ -469,6 +439,9 @@ begin
     CarsPositions[9].pos:=JData.FindPath('GameState.CarsPositions9').AsInteger;
     Form1.DrawGameTimer.Enabled:=JData.FindPath('GameState.DrawTimerEnabled').AsBoolean;
     Form1.CalculateTimer.Enabled:=JData.FindPath('GameState.CalculateTimerEnabled').AsBoolean;
+    Form1.CalculateTimer.Interval:=JData.FindPath('GameState.CalculateTimerInterval').AsInteger;
+    Form4.Edit1.Caption:=IntToStr(100 - Form1.CalculateTimer.Interval);
+    Form4.TrackBar1.Position:=100 - Form1.CalculateTimer.Interval;
 
     if pos > 1 then
       for i:=0 to 9 do
@@ -591,6 +564,7 @@ begin
   JGameState.Add('Speed', Form1.TrackBar1.Position);
   JGameState.Add('DrawTimerEnabled', Form1.DrawGameTimer.Enabled);
   JGameState.Add('CalculateTimerEnabled', Form1.CalculateTimer.Enabled);
+  JGameState.Add('CalculateTimerInterval', Form1.CalculateTimer.Interval);
   JSaveGame.Add('GameState', JGameState);
 
   strList.Text:=JSaveGame.FormatJSON();
@@ -625,42 +599,24 @@ begin
   StartStopGame;
 end;
 
-procedure TForm1.TrackBar1Change(Sender: TObject);
-begin
-  Form1.Edit1.Text:=IntToStr(Form1.TrackBar1.Position);
-  if Form1.TrackBar1.Position=0 then Form1.CalculateTimer.Interval:=0 else
-  Form1.CalculateTimer.Interval:=100 - Form1.TrackBar1.Position;
-end;
-
 procedure TForm1.DrawGameTimerTimer(Sender: TObject);
 begin
   DrawGame;
 end;
 
-procedure TForm1.Edit1Change(Sender: TObject);
-begin
-  if (Form1.Edit1.Text='') then
-  begin
-    Form1.Edit1.Text:='0';
-  end;
-  if StrToInt(Form1.Edit1.Text) > 99 then
-  begin
-    Form1.Edit1.Text:='99';
-    Form3.Show;
-    Form3.Label1.Caption:='Число должно быть от 0 до 99.';
-  end;
-  Form1.TrackBar1.Position:=StrToInt(Form1.Edit1.Text);
-  Form1.CalculateTimer.Interval:=100 - Form1.TrackBar1.Position;
-end;
-
-procedure TForm1.Edit1KeyPress(Sender: TObject; var Key: char);
-begin
-  EditSpeed(Key);
-end;
-
 procedure TForm1.CalculateTimerTimer(Sender: TObject);
 begin
   DriveCar;
+end;
+
+procedure TForm1.AboutApplicationClick(Sender: TObject);
+begin
+  Application.MessageBox('Приложение представляет собой игру в гонки между десятью машинами. Вы можете менять цвет машин и поля, а также скорость машин. В игре реализована возможность сохранять и загружать игру.', 'О программе');
+end;
+
+procedure TForm1.AboutAuthorClick(Sender: TObject);
+begin
+  Application.MessageBox('Выполнил работу студент ИВТб-2301 Одегов Иван.', 'О авторе');
 end;
 
 procedure TForm1.ExitApplicationClick(Sender: TObject);

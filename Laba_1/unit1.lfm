@@ -4,11 +4,12 @@ object Form1: TForm1
   Top = 118
   Width = 2000
   BorderStyle = bsSingle
-  Caption = 'Form1'
+  Caption = 'SuperRacist'
   ClientHeight = 1180
   ClientWidth = 2000
   Menu = MainMenu1
   OnCreate = FormCreate
+  Position = poDesktopCenter
   LCLVersion = '2.2.4.0'
   object Panel1: TPanel
     Left = 0
@@ -38,7 +39,6 @@ object Form1: TForm1
       Height = 75
       Top = 8
       Width = 148
-      AutoSize = True
       Caption = 'Старт'
       Font.CharSet = RUSSIAN_CHARSET
       Font.Height = -48
@@ -52,8 +52,7 @@ object Form1: TForm1
       Left = 328
       Height = 75
       Top = 8
-      Width = 152
-      AutoSize = True
+      Width = 303
       Caption = 'Пауза'
       Font.CharSet = RUSSIAN_CHARSET
       Font.Height = -48
@@ -69,7 +68,6 @@ object Form1: TForm1
       Top = 58
       Width = 300
       Max = 99
-      OnChange = TrackBar1Change
       PageSize = 1
       Position = 99
       TabOrder = 3
@@ -80,8 +78,6 @@ object Form1: TForm1
       Height = 23
       Top = 58
       Width = 80
-      OnChange = Edit1Change
-      OnKeyPress = Edit1KeyPress
       TabOrder = 4
       Text = '99'
       Visible = False
@@ -135,9 +131,11 @@ object Form1: TForm1
       Caption = 'Справка'
       object AboutApplication: TMenuItem
         Caption = 'О программе'
+        OnClick = AboutApplicationClick
       end
       object AboutAuthor: TMenuItem
         Caption = 'О авторе'
+        OnClick = AboutAuthorClick
       end
     end
   end

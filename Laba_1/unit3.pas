@@ -31,8 +31,6 @@ var
 
 implementation
 
-uses unit1;
-
 {$R *.lfm}
 
 { TForm3 }
@@ -45,7 +43,7 @@ end;
 
 procedure TForm3.Timer1Timer(Sender: TObject);
 begin
-  if i > 250 then
+  if i > 100 then
   begin
     Form3.Timer1.Enabled:=False;
     Form3.Close;
