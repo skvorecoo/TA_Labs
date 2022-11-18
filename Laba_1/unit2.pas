@@ -158,7 +158,7 @@ var
   i, j, b, a: integer;
 
 begin
-  for i:=0 to 11 do
+  for i:=0 to 15 do
   begin
     Reserved[i]:=false;
   end;
@@ -168,7 +168,7 @@ begin
   end;
   i:=1;
   repeat
-    a:=random(11)+1;
+    a:=random(15)+1;
     if not(Reserved[a]) then
     begin
       b:=random(10)+1;

@@ -1079,6 +1079,10 @@ object Form2: TForm2
       'Жёлтый'
       'Небесно-голубой'
       'Денежно-зелёный'
+      'Чёрный'
+      'Бордовый'
+      'Оливковый'
+      'Серый'
     )
     OnClick = ComboBox1Click
     OnSelect = ComboBox1Select
@@ -1115,6 +1119,10 @@ object Form2: TForm2
       'Жёлтый'
       'Небесно-голубой'
       'Денежно-зелёный'
+      'Чёрный'
+      'Бордовый'
+      'Оливковый'
+      'Серый'
     )
     OnClick = ComboBox2Click
     OnSelect = ComboBox2Select
@@ -1143,6 +1151,10 @@ object Form2: TForm2
       'Жёлтый'
       'Небесно-голубой'
       'Денежно-зелёный'
+      'Чёрный'
+      'Бордовый'
+      'Оливковый'
+      'Серый'
     )
     OnClick = ComboBox3Click
     OnSelect = ComboBox3Select
@@ -1171,6 +1183,10 @@ object Form2: TForm2
       'Жёлтый'
       'Небесно-голубой'
       'Денежно-зелёный'
+      'Чёрный'
+      'Бордовый'
+      'Оливковый'
+      'Серый'
     )
     OnClick = ComboBox4Click
     OnSelect = ComboBox4Select
@@ -1199,6 +1215,10 @@ object Form2: TForm2
       'Жёлтый'
       'Небесно-голубой'
       'Денежно-зелёный'
+      'Чёрный'
+      'Бордовый'
+      'Оливковый'
+      'Серый'
     )
     OnClick = ComboBox5Click
     OnSelect = ComboBox5Select
@@ -1227,6 +1247,10 @@ object Form2: TForm2
       'Жёлтый'
       'Небесно-голубой'
       'Денежно-зелёный'
+      'Чёрный'
+      'Бордовый'
+      'Оливковый'
+      'Серый'
     )
     OnClick = ComboBox6Click
     OnSelect = ComboBox6Select
@@ -1255,6 +1279,10 @@ object Form2: TForm2
       'Жёлтый'
       'Небесно-голубой'
       'Денежно-зелёный'
+      'Чёрный'
+      'Бордовый'
+      'Оливковый'
+      'Серый'
     )
     OnClick = ComboBox7Click
     OnSelect = ComboBox7Select
@@ -1283,6 +1311,10 @@ object Form2: TForm2
       'Жёлтый'
       'Небесно-голубой'
       'Денежно-зелёный'
+      'Чёрный'
+      'Бордовый'
+      'Оливковый'
+      'Серый'
     )
     OnClick = ComboBox8Click
     OnSelect = ComboBox8Select
@@ -1311,6 +1343,10 @@ object Form2: TForm2
       'Жёлтый'
       'Небесно-голубой'
       'Денежно-зелёный'
+      'Чёрный'
+      'Бордовый'
+      'Оливковый'
+      'Серый'
     )
     OnClick = ComboBox9Click
     OnSelect = ComboBox9Select
@@ -1339,6 +1375,10 @@ object Form2: TForm2
       'Жёлтый'
       'Небесно-голубой'
       'Денежно-зелёный'
+      'Чёрный'
+      'Бордовый'
+      'Оливковый'
+      'Серый'
     )
     OnClick = ComboBox10Click
     OnSelect = ComboBox10Select
@@ -1573,6 +1613,10 @@ object Form2: TForm2
       'Жёлтый'
       'Небесно-голубой'
       'Денежно-зелёный'
+      'Чёрный'
+      'Бордовый'
+      'Оливковый'
+      'Серый'
     )
     OnClick = ComboBox21Click
     OnSelect = ComboBox21Select
