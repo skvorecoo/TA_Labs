@@ -1,7 +1,7 @@
 object Form4: TForm4
-  Left = 571
+  Left = 572
   Height = 180
-  Top = 543
+  Top = 544
   Width = 473
   Caption = 'Настройка скорости'
   ClientHeight = 180

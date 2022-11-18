@@ -17,7 +17,7 @@ uses
 
 begin
   RequireDerivedFormResource:=True;
-  Application.Title:='SuperRacist';
+  Application.Title:='SuperRacer';
   Application.Scaled:=True;
   Application.Initialize;
   Application.CreateForm(TForm1, Form1);

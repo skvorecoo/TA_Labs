@@ -1,0 +1,98 @@
+{
+  "Cars" : {
+    "Car0" : {
+      "Color" : 10,
+      "Type" : 0,
+      "X" : 1760,
+      "Y" : 260,
+      "Finished" : false
+    },
+    "Car1" : {
+      "Color" : 1,
+      "Type" : 1,
+      "X" : 1820,
+      "Y" : 350,
+      "Finished" : true
+    },
+    "Car2" : {
+      "Color" : 14,
+      "Type" : 2,
+      "X" : 1160,
+      "Y" : 440,
+      "Finished" : false
+    },
+    "Car3" : {
+      "Color" : 12,
+      "Type" : 3,
+      "X" : 1580,
+      "Y" : 530,
+      "Finished" : false
+    },
+    "Car4" : {
+      "Color" : 4,
+      "Type" : 4,
+      "X" : 920,
+      "Y" : 620,
+      "Finished" : false
+    },
+    "Car5" : {
+      "Color" : 9,
+      "Type" : 0,
+      "X" : 1460,
+      "Y" : 710,
+      "Finished" : false
+    },
+    "Car6" : {
+      "Color" : 11,
+      "Type" : 1,
+      "X" : 1580,
+      "Y" : 800,
+      "Finished" : false
+    },
+    "Car7" : {
+      "Color" : 0,
+      "Type" : 2,
+      "X" : 1280,
+      "Y" : 890,
+      "Finished" : false
+    },
+    "Car8" : {
+      "Color" : 15,
+      "Type" : 3,
+      "X" : 1580,
+      "Y" : 980,
+      "Finished" : false
+    },
+    "Car9" : {
+      "Color" : 13,
+      "Type" : 4,
+      "X" : 1820,
+      "Y" : 1070,
+      "Finished" : false
+    }
+  },
+  "Grass" : {
+    "Color" : 6
+  },
+  "GameState" : {
+    "PlayPauseCaption" : "Продолжить",
+    "PlayPauseState" : false,
+    "StartStopCaption" : "Стоп",
+    "StartStopState" : true,
+    "NumbersOfArrivedCars" : 2,
+    "CarsPositions0" : 0,
+    "CarsPositions1" : 1,
+    "CarsPositions2" : 0,
+    "CarsPositions3" : 0,
+    "CarsPositions4" : 0,
+    "CarsPositions5" : 0,
+    "CarsPositions6" : 0,
+    "CarsPositions7" : 0,
+    "CarsPositions8" : 0,
+    "CarsPositions9" : 0,
+    "Speed" : 99,
+    "DrawTimerEnabled" : true,
+    "CalculateTimerEnabled" : false,
+    "CalculateTimerInterval" : 1
+  }
+}

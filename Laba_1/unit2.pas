@@ -155,7 +155,7 @@ end;
 procedure TForm2.Button3Click(Sender: TObject);
 
 var
-  AlredyTaken: array [1..11] of boolean;
+  AlredyTaken: array [1..10] of boolean;
   i, b, a: integer;
 
 begin
@@ -167,12 +167,15 @@ begin
   begin
     AlredyTaken[i]:=false;
   end;
+  a:=random(16);
+  Form2.ComboBox21.ItemIndex:=a;
+  Reserved[a]:=true;
   i:=1;
   repeat
-    a:=random(15)+1;
+    a:=random(16);
     if not(Reserved[a]) then
     begin
-      b:=random(11)+1;
+      b:=random(10)+1;
       if not(AlredyTaken[b]) then
       begin
         case b of
@@ -186,7 +189,6 @@ begin
         8: Form2.ComboBox8.ItemIndex:=a;
         9: Form2.ComboBox9.ItemIndex:=a;
         10: Form2.ComboBox10.ItemIndex:=a;
-        11: Form2.ComboBox21.ItemIndex:=a;
         end;
         AlredyTaken[b]:=true;
         Reserved[a]:=true;

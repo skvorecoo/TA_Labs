@@ -48,9 +48,12 @@ begin
     Form3.Label1.Caption:='В поле можно вводить только цифры.';
   end;
 end;
+
 procedure TForm4.Button1Click(Sender: TObject);
 begin
   Form4.Close;
+  Form1.TrackBar1.Position:=Form4.TrackBar1.Position;
+  Form1.Edit1.Text:=Form4.Edit1.Text;
 end;
 
 procedure TForm4.Button2Click(Sender: TObject);
@@ -71,6 +74,8 @@ end;
 procedure TForm4.FormShow(Sender: TObject);
 begin
   tmp:=Form1.CalculateTimer.Interval;
+  Form4.Edit1.Text:=Form1.Edit1.Text;
+  Form4.TrackBar1.Position:=Form1.TrackBar1.Position;
 end;
 
 procedure TForm4.Edit1Change(Sender: TObject);
@@ -89,10 +94,7 @@ begin
     Form3.Show;
     Form3.Label1.Caption:='Число должно быть от 0 до 99.';
   end;
-  for i:=0 to 99 do
-  begin
-    if Form4.Edit1.Text = '0' + IntToStr(i) then Form4.Edit1.Text:=IntToStr(i);
-  end;
+  for i:=0 to 99 do if Form4.Edit1.Text = '0' + IntToStr(i) then Form4.Edit1.Text:=IntToStr(i);
   Form4.TrackBar1.Position:=StrToInt(Form4.Edit1.Text);
   Form1.CalculateTimer.Interval:=100 - Form4.TrackBar1.Position;
 end;

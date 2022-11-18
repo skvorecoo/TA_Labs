@@ -50,6 +50,8 @@ type
     procedure AboutAuthorClick(Sender: TObject);
     procedure CalculateTimerTimer(Sender: TObject);
     procedure DrawGameTimerTimer(Sender: TObject);
+    procedure Edit1Change(Sender: TObject);
+    procedure Edit1Click(Sender: TObject);
     procedure ExitApplicationClick(Sender: TObject);
     procedure ExitGameBtnClick(Sender: TObject);
     procedure FileOpenClick(Sender: TObject);
@@ -59,6 +61,8 @@ type
     procedure SetColorsClick(Sender: TObject);
     procedure SetSpeedClick(Sender: TObject);
     procedure StartStopBtnClick(Sender: TObject);
+    procedure TrackBar1Change(Sender: TObject);
+    procedure TrackBar1Click(Sender: TObject);
   private
 
   public
@@ -89,6 +93,7 @@ var
   i, j: integer;
 
 begin
+  pos:=1;
   ShowSpeed:=True; // Показать скрыть скорость
   PlayPause:=True; //True - Play, False - Pause
   StartStop:=False; //True - Start, False - Stop
@@ -317,7 +322,7 @@ begin
 
     Form1.PlayPauseBtn.Caption:='Пауза';
     PlayPause:=True;
-    Form1.SetColors.Enabled:=True;
+    Form1.SettingsMenu.Enabled:=True;
   end
   else
   begin
@@ -325,7 +330,7 @@ begin
     if (PlayPause) then Form1.CalculateTimer.Enabled:=True;
     pos:=1;
     //PlayPause:=True;
-    Form1.SetColors.Enabled:=False;
+    Form1.SettingsMenu.Enabled:=False;
     Form2.Close;
     Form3.Close;
   end;
@@ -442,6 +447,8 @@ begin
     Form1.CalculateTimer.Interval:=JData.FindPath('GameState.CalculateTimerInterval').AsInteger;
     Form4.Edit1.Caption:=IntToStr(100 - Form1.CalculateTimer.Interval);
     Form4.TrackBar1.Position:=100 - Form1.CalculateTimer.Interval;
+    Form1.Edit1.Caption:=IntToStr(100 - Form1.CalculateTimer.Interval);
+    Form1.TrackBar1.Position:=100 - Form1.CalculateTimer.Interval;
 
     if pos > 1 then
       for i:=0 to 9 do
@@ -599,9 +606,47 @@ begin
   StartStopGame;
 end;
 
+procedure TForm1.TrackBar1Change(Sender: TObject);
+begin
+  Form1.Edit1.Text:=IntToStr(Form1.TrackBar1.Position);
+  if Form1.TrackBar1.Position=0 then Form1.CalculateTimer.Interval:=0 else
+  Form1.CalculateTimer.Interval:=100 - Form1.TrackBar1.Position;
+end;
+
+procedure TForm1.TrackBar1Click(Sender: TObject);
+begin
+  Form4.TrackBar1.Position:=Form1.TrackBar1.Position;
+end;
+
 procedure TForm1.DrawGameTimerTimer(Sender: TObject);
 begin
   DrawGame;
+end;
+
+procedure TForm1.Edit1Change(Sender: TObject);
+
+var
+  i: integer;
+
+begin
+  if (Form1.Edit1.Text='') then
+  begin
+    Form1.Edit1.Text:='0';
+  end;
+  if (StrToInt(Form1.Edit1.Text) > 99) or (StrToInt(Form1.Edit1.Text) < 0) then
+  begin
+    Form1.Edit1.Text:='99';
+    Form3.Show;
+    Form3.Label1.Caption:='Число должно быть от 0 до 99.';
+  end;
+  for i:=0 to 99 do if Form1.Edit1.Text = '0' + IntToStr(i) then Form1.Edit1.Text:=IntToStr(i);
+  Form1.TrackBar1.Position:=StrToInt(Form1.Edit1.Text);
+  Form1.CalculateTimer.Interval:=100 - Form4.TrackBar1.Position;
+end;
+
+procedure TForm1.Edit1Click(Sender: TObject);
+begin
+  Form4.Edit1.Text:=Form1.Edit1.Text;
 end;
 
 procedure TForm1.CalculateTimerTimer(Sender: TObject);

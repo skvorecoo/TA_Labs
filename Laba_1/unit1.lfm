@@ -1,10 +1,10 @@
 object Form1: TForm1
-  Left = 51
+  Left = 308
   Height = 1200
-  Top = 0
+  Top = 199
   Width = 2000
   BorderStyle = bsSingle
-  Caption = 'SuperRacist'
+  Caption = 'SuperRacer'
   ClientHeight = 1180
   ClientWidth = 2000
   Menu = MainMenu1
@@ -68,28 +68,29 @@ object Form1: TForm1
       Top = 58
       Width = 300
       Max = 99
+      OnChange = TrackBar1Change
       PageSize = 1
       Position = 99
+      OnClick = TrackBar1Click
       TabOrder = 3
-      Visible = False
     end
     object Edit1: TEdit
       Left = 1600
       Height = 23
       Top = 58
       Width = 80
+      OnChange = Edit1Change
+      OnClick = Edit1Click
       TabOrder = 4
       Text = '99'
-      Visible = False
     end
     object Label1: TLabel
       Left = 1536
       Height = 15
-      Top = 58
+      Top = 64
       Width = 55
       Caption = 'Скорость:'
       ParentColor = False
-      Visible = False
     end
   end
   object DrawGameTimer: TTimer
@@ -148,12 +149,12 @@ object Form1: TForm1
   end
   object SaveDialog1: TSaveDialog
     DefaultExt = '.json'
-    Filter = '.json|*.json'
+    Filter = 'SaveData|*.svdt'
     Left = 64
     Top = 587
   end
   object OpenDialog1: TOpenDialog
-    Filter = '.json|*.json'
+    Filter = 'SaveData|*.svdt'
     Left = 225
     Top = 661
   end
