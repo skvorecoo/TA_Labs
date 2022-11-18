@@ -14,6 +14,7 @@ type
   TForm3 = class(TForm)
     Button1: TButton;
     Label1: TLabel;
+    Panel1: TPanel;
     Timer1: TTimer;
     procedure Button1Click(Sender: TObject);
     procedure FormCreate(Sender: TObject);

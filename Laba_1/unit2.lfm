@@ -1,7 +1,7 @@
 object Form2: TForm2
-  Left = 335
+  Left = 337
   Height = 733
-  Top = 297
+  Top = 299
   Width = 1205
   Caption = 'Настройка цвета'
   ClientHeight = 733
